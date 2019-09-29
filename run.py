@@ -65,20 +65,18 @@ if __name__ == '__main__':
     # reproducibility is good
     np.random.seed(42)
     torch.manual_seed(42)
-    torch.cuda.manual_seed_all(42)
     
     # load the dataset
     print("loading binarized mnist from", args.data_path)
     mnist = np.load(args.data_path)
     xtr, xte = mnist['train_data'], mnist['valid_data']
-    xtr = torch.from_numpy(xtr).cuda()
-    xte = torch.from_numpy(xte).cuda()
+    xtr = torch.from_numpy(xtr)
+    xte = torch.from_numpy(xte)
 
     # construct model and ship to GPU
     hidden_list = list(map(int, args.hiddens.split(',')))
     model = MADE(xtr.size(1), hidden_list, xtr.size(1), num_masks=args.num_masks)
     print("number of model parameters:",sum([np.prod(p.size()) for p in model.parameters()]))
-    model.cuda()
 
     # set up the optimizer
     opt = torch.optim.Adam(model.parameters(), 1e-3, weight_decay=1e-4)
